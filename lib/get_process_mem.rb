@@ -86,7 +86,9 @@ class GetProcessMem
     line = file.each_line.detect { |line| line.start_with? "VmRSS".freeze }
     return unless line
     return unless (_name, value, unit = line.split(nil)).length == 3
-    CONVERSION[unit.downcase!] * value.to_i
+    conversion = CONVERSION[unit.downcase]
+    return unless conversion
+    conversion * value.to_i
   rescue Errno::EACCES, Errno::ENOENT
     0
   end

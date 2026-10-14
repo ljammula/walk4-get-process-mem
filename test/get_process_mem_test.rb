@@ -1,4 +1,5 @@
 require "test_helper"
+require "stringio"
 
 class GetProcessMemTest < Test::Unit::TestCase
   def setup
@@ -40,6 +41,27 @@ class GetProcessMemTest < Test::Unit::TestCase
   def test_linux_status
     bytes = @mem.linux_status_memory(fixture_path("heroku-bash-status"))
     assert_equal bytes, 2080768
+  end
+
+  def test_linux_status_memory_converts_recognized_units
+    assert_equal 1_024, @mem.linux_status_memory(StringIO.new("VmRSS: 1 kB\n"))
+    assert_equal 1_048_576, @mem.linux_status_memory(StringIO.new("VmRSS: 1 mB\n"))
+    assert_equal 1_073_741_824, @mem.linux_status_memory(StringIO.new("VmRSS: 1 gB\n"))
+  end
+
+  def test_linux_status_memory_returns_nil_for_unsupported_unit
+    bytes = @mem.linux_status_memory(fixture_path("heroku-bash-status-unsupported-unit"))
+    assert_nil bytes
+  end
+
+  def test_bytes_falls_back_to_ps_memory_for_unsupported_linux_status_unit
+    sentinel = 123_456
+    memory = GetProcessMem.new
+    memory.instance_variable_set(:@linux, true)
+    memory.instance_variable_set(:@status_file, fixture_path("heroku-bash-status-unsupported-unit"))
+    memory.define_singleton_method(:ps_memory) { sentinel }
+
+    assert_equal sentinel, memory.bytes
   end
 
   def test_conversions

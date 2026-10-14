@@ -1,0 +1,2 @@
+verify_command: "ruby -Ilib test/get_process_mem_test.rb"
+required_binaries: [ruby]

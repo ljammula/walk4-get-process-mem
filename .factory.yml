@@ -1,3 +1,4 @@
 verify_command: "bundle exec ruby -Ilib:test test/get_process_mem_test.rb"
+full_suite_command: "bundle exec ruby -Ilib:test test/get_process_mem_test.rb"
 required_binaries: [ruby, bundle]
 preflight_profile: brownfield

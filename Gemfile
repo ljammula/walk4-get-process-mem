@@ -1,6 +1,7 @@
 source "https://rubygems.org"
-gem "sys-proctable"
-
-gemspec
-
+gem "ffi", "~> 1.0"
+gem "bigdecimal", ">= 2.0"
+gem "sys-proctable", "~> 1.2"
+gem "rake", "~> 12"
+gem "test-unit", "~> 3"
 gem "standard"

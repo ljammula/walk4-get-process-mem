@@ -103,7 +103,7 @@ class GetProcessMem
       end
       sum
     end
-  rescue Errno::EACCES
+  rescue Errno::EACCES, Errno::ENOENT
     0
   end
 

@@ -1,4 +1,5 @@
 require "test_helper"
+require "tmpdir"
 
 class GetProcessMemTest < Test::Unit::TestCase
   def setup
@@ -37,9 +38,31 @@ class GetProcessMemTest < Test::Unit::TestCase
     assert_in_delta BigDecimal("2122240.0"), bytes, delta
   end
 
+  def test_linux_smap_missing_file
+    Dir.mktmpdir do |directory|
+      file = Pathname.new(directory).join("missing-smaps")
+      assert_equal 0, @mem.linux_memory(file)
+    end
+  end
+
+  def test_linux_smap_empty_file
+    Dir.mktmpdir do |directory|
+      file = Pathname.new(directory).join("empty-smaps")
+      File.open(file, "w") {}
+      assert_nil @mem.linux_memory(file)
+    end
+  end
+
   def test_linux_status
     bytes = @mem.linux_status_memory(fixture_path("heroku-bash-status"))
     assert_equal bytes, 2080768
+  end
+
+  def test_linux_status_missing_file
+    Dir.mktmpdir do |directory|
+      file = Pathname.new(directory).join("missing-status")
+      assert_equal 0, @mem.linux_status_memory(file)
+    end
   end
 
   def test_conversions
